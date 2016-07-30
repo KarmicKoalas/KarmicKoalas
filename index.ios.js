@@ -16,11 +16,8 @@ class KarmicKoalas extends Component {
       <NavigatorIOS
           initialRoute={{
             component: Main,
-<<<<<<< b66356dcea859ba8f137e74b22dfdd3dc12070e7
             title: 'Killa Koala',
             component: Main,
-=======
->>>>>>> foo
             title: 'My Initial App View',
           }}
           style={{flex: 1}}
