@@ -79,6 +79,7 @@ class Main extends Component {
         this.state.users = updateUsersLocations(this.state.groupOfUsers);
         console.log('Users!!!', this.state.users);
       });
+
 }
 
   componentWillUnmount() {
