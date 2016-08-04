@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Text, MapView, TextInput, Dimensions, StatusBarIOS, TouchableHighlight } from 'react-native';
 import userAgent from '../utils/userAgent'
-import io from 'socket.io-client/socket.io'
+//import io from 'socket.io-client/socket.io'
 
 
 const { width, height } = Dimensions.get('window')
