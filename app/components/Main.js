@@ -7,7 +7,7 @@ import MapComponent from './Map.js'
 import SignUp from './SignUp'
 import searchRoutes from './searchRoutes'
 import createRoute from './createRoute'
-
+import Events from './myEvents'
 if (window.navigator && Object.keys(window.navigator).length == 0) {
   window = Object.assign(window, { navigator: { userAgent: 'ReactNative' }});
 }
@@ -22,7 +22,8 @@ class Main extends Component {
 
   constructor(props) {
     super(props);
-
+    
+    this.setUserId = this.setUserId.bind(this); 
     this.navToSignUp = this.navToSignUp.bind(this);
     this.navToSearchRoutes = this.navToSearchRoutes.bind(this);
     this.navToEvents = this.navToEvents.bind(this);
@@ -30,22 +31,37 @@ class Main extends Component {
 
     this.socket = io('https://wegoios.herokuapp.com',  {jsonp: false, transports:['websocket'], allowUpgrades:true});
     this.state = {
+      userId:'',
       eventId: '1',//eventId: props.eventId,   //this will come from group list view and pass to server
       socket:this.socket
     }
-    AsyncStorage.setItem("signedUp", "false");
-    AsyncStorage.getItem("signedUp").then((value) => {
-      if(value !== "true"){
+   // AsyncStorage.setItem("userId", "234");
+    AsyncStorage.getItem("userId").then((value) => {
+      if(value === null){
         this.navToSignUp();
-      console.log("signedUp:", value)
+      //console.log("userId:", value)
+      // this.setState({
+      //   userId = value
+      // })
+      } else {
+        this.setUserId(value);
       }
     });
+  }
+
+  setUserId(userId){
+    this.setState({
+      userId: userId
+    })
   }
 
   navToSignUp(){
     this.props.navigator.push({
       component: SignUp,
-      title: "Sign Up"
+      title: "Sign Up",
+      passProps: {
+        setUserId: this.setUserId
+      }
     });
   }
 
@@ -73,7 +89,7 @@ class Main extends Component {
 
    componentDidMount() {
       this.state.socket = this.socket
-      this.socket.emit('intitialize',{eventId:this.state.eventId})
+      this.socket.emit('intitialize',{eventId:this.state.eventId, userId:this.state.userId})
  }
 
   render() {

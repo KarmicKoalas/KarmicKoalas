@@ -17,8 +17,9 @@ io.on('connection', (socket) => {
   console.log('Client connected');
 
   this.on('intitialize',(data) =>{
-    var myRoom = data.eventId
-    console.log('intialaze client side', myRoom)
+    var myRoom = data.eventId;
+    var userId = data.userId;
+    console.log('intialaze client side', myRoom, userId)
     socket.join('myRoom');
   });
   

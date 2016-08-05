@@ -19,7 +19,12 @@ class SignUp extends Component {
 
   signUp(){
     // TODO: Signup logic
-    AsyncStorage.setItem("signedUp", "true");
+    //post request to server /signup response will be userId then store that value
+    //.then(
+    // AsyncStorage.setItem("userId", userId.toString());
+    //)
+    this.props.setUserId("123");
+    AsyncStorage.setItem("userId", "123");
     this.props.navigator.pop();
   }
 
