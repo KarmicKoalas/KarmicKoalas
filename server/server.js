@@ -12,18 +12,22 @@ server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 const io = require('socket.io')(server);
 var rooms = {};
+var userId='foo';
 
 io.on('connection', (socket) => {
   console.log('Client connected');
 
   this.on('intitialize',(data) =>{
-    var myRoom = data.eventId
-    console.log('intialaze client side', myRoom)
+    var myRoom = data.eventId;
+    //in future add lookup to db user table to get name from id
+    userId = data.userId;
+    console.log('intialaze client side', myRoom, userId)
     socket.join('myRoom');
   });
   
   socket.on('location', (data) =>{
     console.log("Incoming location:", data)
+    data.title = userId
     io.to('myRoom').emit('groupUpdate', data);
   });
 

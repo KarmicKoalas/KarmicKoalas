@@ -49,24 +49,15 @@ db.schema.hasTable('routes').then((exists)=>{
 //add to this table each time you add a route.
 //on insert to routes, .get() route_id. on insert to keywords,
 // .get() each keword_id and insert pairs into this join table
-db.schema.hasTable('keyword_routes').then((exists)=>{
-  if(!exists){
-  return db.schema.createTable('keywords_routes', (table)=>{
-    table.integer('routes_id').references('routes.id');
-    table.integer('keywords_id').references('keywords.id');
-  });
- }
-});
-//use this table to generate room access permissions for sockets in server.js
-//add to this table when invite accepted and add host on event creation 
-db.schema.hasTable('event_participant').then((exists)=>{
-  if(!exists){
-  return db.schema.createTable('event_participant', (table)=>{
-    table.integer('events_id').references('events.id');
-    table.integer('participant').references('users.id');
-  });
- }
-});
+// db.schema.hasTable('keyword_routes').then((exists)=>{
+//   if(!exists){
+//   return db.schema.createTable('keyword_routes', (table)=>{
+//     table.integer('routes_id').references('routes.id');
+//     table.integer('keywords_id').references('keywords.id');
+//   });
+//  }
+// });
+
 
 db.schema.hasTable('events').then((exists)=>{
   if(!exists){
@@ -81,6 +72,15 @@ db.schema.hasTable('events').then((exists)=>{
   }
 });
 
-
+//use this table to generate room access permissions for sockets in server.js
+//add to this table when invite accepted and add host on event creation 
+db.schema.hasTable('event_participant').then((exists)=>{
+  if(!exists){
+  return db.schema.createTable('event_participant', (table)=>{
+    table.integer('events_id').references('events.id');
+    table.integer('participant').references('users.id');
+  });
+ }
+});
 var bookshelf = require('bookshelf')(db);
 module.exports = bookshelf;
