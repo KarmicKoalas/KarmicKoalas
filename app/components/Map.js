@@ -63,7 +63,8 @@ class MapComponent extends Component {
         this.props.socket.on('groupUpdate',(data) =>  {
           console.log("Data from server", data);
         //  this.updateUsersArray(data)
-          this.state.users[0][data.title] = {latitude: data.latitude, longitude: data.longitude}
+          this.state.users[0][data.title] = data;
+          this.setState({})
         } );
 
         console.log('Users!!!', this.state.users);
@@ -118,9 +119,10 @@ class MapComponent extends Component {
             followUserLocation={false}
             onRegionChangeComplete={this.onRegionChangeComplete}
           >
-          {Object.keys(this.state.users[0]).map(title => (
+          {Object.keys(this.state.users[0]).map(user => (
             <MapView.Marker
-              coordinate={this.state.users[0][title]}
+              title={this.state.users[0][user]["title"]}
+              coordinate={this.state.users[0][user]}
             />
           ))}
           <MapView.Polyline
