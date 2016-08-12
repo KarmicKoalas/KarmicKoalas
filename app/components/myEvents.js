@@ -50,7 +50,8 @@ class myEvents extends Component {
     //   method: "POST",
     //   headers: {'Content-Type': 'application/json'},
     //   body: JSON.stringify({user_id: userId})
-    // }).then((responseData) => {
+    // }).then(response => response.json())
+    // .then(responseData => {
     //   this.setState({
     //     objectdataSource: dataSource.cloneWithRows(JSON.parse(responseData._bodyText))
     //   });
