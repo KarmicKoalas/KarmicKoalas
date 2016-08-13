@@ -1,0 +1,20 @@
+
+to run mysql
+
+open bash
+brew install mysql
+ps -ef | grep mysql
+
+if not found mysql:
+sudo mysqld
+mysqld -u root
+
+if fount mysql:
+mysql
+mysql -u root
+
+create database karmic;
+show databases;
+use karmic;
+
+then start node server with nodemon.

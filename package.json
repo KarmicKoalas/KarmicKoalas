@@ -1,0 +1,30 @@
+{
+  "name": "KarmicKoalas",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "bluebird": "^3.4.1",
+    "body-parser": "1.15.2",
+    "bookshelf": "0.10.0",
+    "express": "4.14.0",
+    "haversine": "1.0.0",
+    "http": "0.0.0",
+    "knex": "0.11.9",
+    "lodash": "4.14.1",
+    "mysql": "2.11.1",
+    "nodemailer": "2.5.0",
+    "react": "15.2.1",
+    "react-native": "0.30.0",
+    "react-native-contacts": "^0.3.0",
+    "react-native-icons": "^0.7.1",
+    "react-native-maps": "^0.7.1",
+    "react-native-permissions": "^0.2.3",
+    "react-native-socketio": "0.3.0",
+    "react-native-vector-icons": "^2.0.3",
+    "socket.io": "1.4.8"
+  }
+}
