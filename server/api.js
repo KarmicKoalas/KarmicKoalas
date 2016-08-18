@@ -229,7 +229,8 @@ app.post('/signup', (req, res) => {
         var data = {
           'userId': user['id']
         };
-        res.status(200).send(JSON.stringify(data))
+        // res.status(200).send(JSON.stringify(data))
+        res.status(200).send(data);
           // } else {
           //     //send resp with error, wrong password
           //     res.send(401, 'wrong password!')

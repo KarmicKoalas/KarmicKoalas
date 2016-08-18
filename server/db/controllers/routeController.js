@@ -10,7 +10,7 @@ module.exports = {
         end_address:JSON.stringify(body.endAddress),
         route_object: JSON.stringify(body.routeObject)
       }
-     return new Route(data).save()
+     return new Route(data).save();
   }
 }
  // searchRoutes: (body, cb)=>{
