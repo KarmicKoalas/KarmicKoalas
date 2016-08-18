@@ -3,7 +3,7 @@ var http = require("https");
 //https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyDPR_rluVMdgqvM4JBorRSJa3Q2Mo_rUXU
 //start:'{latitude: 37.33756603, longitude: -122.02681114}'
 var getAddress = (start, end, cb) => {
-  console.log(start, end)
+  // console.log("START", start,"END", end)
   var start = start.latitude + ',' + start.longitude;
   var end = end.latitude + ',' + end.longitude;
   var results = {};
@@ -11,13 +11,13 @@ var getAddress = (start, end, cb) => {
       result = JSON.parse(result)
       var Address = result['results'][0]['formatted_address']
       results.start = Address
-      console.log(results)
+      // console.log("RES1",results)
 
      getAddressFromLoc(end, (result)=>{
       result = JSON.parse(result)
       var Address = result['results'][0]['formatted_address']
       results.end = Address
-      console.log(results)
+      // console.log("RES2",results)
       cb(results)
      })
    })
