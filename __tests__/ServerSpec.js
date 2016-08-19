@@ -76,13 +76,13 @@ describe('/getRouteById', () => {
       }
     }, (err, res, body) => {
       expect(body).to.be.an('object');
-      console.log("body:", body)
       // TODO why is body.title stringified?
       expect(JSON.parse(body.title)).to.equal("New York walk");
       done();
     });
   });
 });
+
 describe('/getMyEvents', () => {
   it('should send back an array of events', (done) => {
     request({
@@ -97,6 +97,7 @@ describe('/getMyEvents', () => {
     });
   });
 });
+
 describe('/getAllUsers', () => {
   it('should send back an array of users', (done) => {
     request(localhost + "/getAllUsers", (err, res, body) => {
@@ -107,46 +108,45 @@ describe('/getAllUsers', () => {
   });
 });
 
-// describe('/signup', () => {
-//   it("should create a new user", (done) => {
-//     request({
-//       method: "POST",
-//       url: localhost + "/signup",
-//       json: {
-//         name: "test",
-//         username: "test",
-//         email: "test@test.com",
-//         password: "test"
-//       }
-//     }, (err, res, body) => {
-//       expect(body).to.be.an("object");
-//       var userId = body.userId;
-//       expect(userId).not.to.be.NaN;
-//       request(localhost + "/getAllUsers", (err, res, body) => {
-//             // console.log("SIGNUP")
-//         var users = JSON.parse(body);
-//         var found = false;
-//         users.forEach(user => {
-//           if(user.user_id === userId) found = true;
-//         });
-//         expect(found).to.equal(true);
-//         new User({
-//           id: userId
-//         }).destroy().then(user => {
-//           request(localhost + "/getAllUsers", (err, res, body) => {
-//             var users = JSON.parse(body);
-//             var found = false;
-//             users.forEach(user => {
-//               if(user.user_id === userId) found = true;
-//             });
-//             expect(found).to.equal(false);
-//             done();
-//           });
-//         });
-//       });
-//     });
-//   });
-// });
+describe('/signup', () => {
+  it("should create a new user", (done) => {
+    request({
+      method: "POST",
+      url: localhost + "/signup",
+      json: {
+        name: "test",
+        username: "test",
+        email: "test@test.com",
+        password: "test"
+      }
+    }, (err, res, body) => {
+      expect(body).to.be.an("object");
+      var userId = body.userId;
+      expect(userId).not.to.be.NaN;
+      request(localhost + "/getAllUsers", (err, res, body) => {
+        var users = JSON.parse(body);
+        var found = false;
+        users.forEach(user => {
+          if(user.user_id === userId) found = true;
+        });
+        expect(found).to.equal(true);
+        new User({
+          id: userId
+        }).destroy().then(user => {
+          request(localhost + "/getAllUsers", (err, res, body) => {
+            var users = JSON.parse(body);
+            var found = false;
+            users.forEach(user => {
+              if(user.user_id === userId) found = true;
+            });
+            expect(found).to.equal(false);
+            done();
+          });
+        });
+      });
+    });
+  });
+});
 
 describe('/createRoute', () => {
   it("should create a new Route", (done) => {
@@ -174,8 +174,7 @@ describe('/createRoute', () => {
       new Route({
         id: body.route_id
       }).fetch().then(route => {
-        // TODO: route.get("title") returns a quoted string
-        expect(JSON.parse(route.get("title"))).to.equal("test");
+        expect(route.get("title")).to.equal("test");
         new Route({id: body.route_id}).destroy().then(route => {
           done();
         });
@@ -184,7 +183,7 @@ describe('/createRoute', () => {
   });
 });
 
-describe("createEvent", () => {
+describe("/createEvent", () => {
   it("should signup, create route, and create event", (done) => {
     request({
       method: "POST",
@@ -234,26 +233,14 @@ describe("createEvent", () => {
             expect(event.get("title")).to.equal("test");
             new Event({id: eventId}).destroy().then(event => {
               new Route({id: routeId}).destroy().then(route => {
-                console.log("YO");
                 new User({id: userId}).destroy().then(user => {
                   done();
-                })
-              })
-            })
+                });
+              });
+            });
           });
         });
       });
     });
   });
 });
-// describe('/createEvent', () => {
-//   it("should create a new Event", (done) => {
-//     request({
-//       method: "POST",
-//       url: localhost + "/createEvent",
-//       json: {
-//
-//       }
-//     })
-//   })
-// });

@@ -7,9 +7,7 @@ import MapComponent from './Map.js'
 import searchRoutes from './searchRoutes'
 import createRoute from './createRoute'
 import myEvents from './myEvents'
-//import permissions from 'react-native-permissions'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Contacts from 'react-native-contacts';
 
 if (window.navigator && Object.keys(window.navigator).length == 0) {
   window = Object.assign(window, { navigator: { userAgent: 'ReactNative' }});

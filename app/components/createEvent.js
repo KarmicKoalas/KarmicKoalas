@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View, ListView, StyleSheet, NavigatorIOS, Dimensions, Text, AlertIOS, TextInput, TouchableHighlight, TouchableOpacity, DatePickerIOS } from 'react-native';
 
-import Contacts from 'react-native-contacts';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import myEvents from './myEvents';
 
