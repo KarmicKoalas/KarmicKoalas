@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import { View, StyleSheet, NavigatorIOS, Dimensions, Text, AlertIOS, AsyncStorage, TextInput, TouchableOpacity, TouchableHighlight } from 'react-native';
 import MapView from 'react-native-maps';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import createEvent from './createEvent';
 
@@ -46,16 +47,24 @@ class createRoute extends Component {
   }
 
   createNewPin() {
-     var pin = { latlng: {latitude: regionText.latitude, longitude: regionText.longitude }, key: count};
+    if(count === 2) return
+    else if(count === 0){
+       var pin = { latlng: {latitude: regionText.latitude, longitude: regionText.longitude }, key: count, color: '#3498db', title: 'Start'};
+    }
+    else if(count === 1){
+       var pin = { latlng: {latitude: regionText.latitude, longitude: regionText.longitude }, key: count, color: '#e74c3c', title: 'Finish'};
+    }
      this.state.pins[0][pin.key] = pin;
      count++
     // console.log('TEST', this.state.pins);
      this.setState({})
      console.log('id', count);
+     if (count === 2) this._onPressButtonPOST(this.state.pins[0]['0'], this.state.pins[0]['1'])
   }
   changeCoordinatesAfterDrop(e, key) {
      this.state.pins[0][key]['latlng'] = e.nativeEvent.coordinate
      this.setState({});
+     if (count === 2) this._onPressButtonPOST(this.state.pins[0]['0'], this.state.pins[0]['1'])
   }
   checkPinCoordinates() {
      console.log('PIN', this.state.pins[0]['0'], this.state.pins[0]['1']);
@@ -65,6 +74,7 @@ class createRoute extends Component {
   }
 
   _onPressButtonPOST(start, end){
+    if(!start || !end) { return }
     var startCoord = start.latlng.latitude + ',' + start.latlng.longitude;
     var endCoord = end.latlng.latitude + ',' + end.latlng.longitude;
     this.setState({
@@ -72,40 +82,47 @@ class createRoute extends Component {
       end: end.latlng
     });
     console.log('send to back', startCoord, endCoord);
-     fetch("https://wegoios.herokuapp.com/getRouteFromGoogle", {method: "POST", headers: {'Content-Type': 'application/json'} ,body: JSON.stringify({start: startCoord, end: endCoord})})
-     .then((response) => response.json())
-     .then((responseData) => {
-       console.log('DATA FROM SERVER', responseData)
-       this.setState({routeCoordinates: responseData});
-     })
-     .done();
+      fetch("https://wegotoo.herokuapp.com/getRouteFromGoogle", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({start: startCoord, end: endCoord})
+      }).then((response) => response.json()).then((responseData) => {
+        console.log('DATA FROM SERVER', responseData)
+        this.setState({
+         routeCoordinates: responseData
+        });
+      }).done();
  }
 
   handleCreateRoute(title, keywords, start, end, routeObject) {
     // {title:string, keywords:[],start:{}, end:{}, routeObject:[]}
-     var keywordsArr = this.traceKeywordsString(keywords);
-      if(this.state.title && keywordsArr.length && this.state.routeCoordinates.length) {
-      fetch("http://localhost:8000/createRoute", {method: "POST" , headers: {'Content-Type': 'application/json'}, body: JSON.stringify({title:title, keywords:keywordsArr,start:start, end:end, routeObject:routeObject})})
-      .then((response) => response.json())
-      .then((responseData) => {
+    var keywordsArr = this.traceKeywordsString(keywords);
+    if(this.state.title && keywordsArr.length && this.state.routeCoordinates.length) {
+      fetch("https://wegotoo.herokuapp.com/createRoute", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({title:title, keywords:keywordsArr,start:start, end:end, routeObject:routeObject})
+      }).then((response) => response.json()).then((responseData) => {
         console.log('createRoute -- SERVER', responseData)
         //this.setState({routeCoordinates: responseData});
-        AsyncStorage.getItem("userId").then((userId) => {
-          console.log('to create event view', userId, responseData.route_id)
+        // AsyncStorage.getItem("userId").then((userId) => {
+          console.log('to create event view', this.props.userId, responseData.route_id)
           this.props.navigator.push({
             component: createEvent,
             title: "Create Event",
             passProps: {
-              userID: userId,
+              userId: this.props.userId,
+              username: this.props.username,
               routeID: responseData.route_id,
-              setEventId: this.props.setEventId
+              setEventId: this.props.setEventId,
             }
           })
-        })
+        // })
       })
       .done();
     } else {
-      console.log('Title, keywords, route is Required');
+      console.log('Title, keywords, route are Required');
+      AlertIOS.alert("Title, keywords and route are Required");
     }
 
    }
@@ -114,9 +131,38 @@ class createRoute extends Component {
     this.handleCreateRoute(this.state.title, this.state.keywordsToTrace, this.state.start, this.state.end, this.state.routeCoordinates);
   }
 
+  componentWillUnmount() {
+    count = 0;
+    console.log('Component has been unmounted');
+  }
+
   render() {
     return (
       <View style={styles.container}>
+          <View style={styles.mapContainer}>
+              <MapView
+                style={styles.map}
+                onRegionChangeComplete={this.onRegionChangeComplete}
+              >
+                {Object.keys(this.state.pins[0]).map(id => (
+                  <MapView.Marker
+                    key={this.state.pins[0][id].key}
+                    pinColor={this.state.pins[0][id].color}
+                    title={this.state.pins[0][id].title}
+                    coordinate={this.state.pins[0][id].latlng}
+                    onDragEnd={(e) => this.changeCoordinatesAfterDrop(e, this.state.pins[0][id].key)}
+                    draggable
+                  />
+                ))}
+                <MapView.Polyline
+                 coordinates={this.state.routeCoordinates}
+                 strokeColor="rgba(0,0,200,0.5)"
+                 strokeWidth={3}
+                 lineDashPattern={[5, 2, 3, 2]}
+               />
+             </MapView>
+         </View>
+        <View style={styles.inputs}>
           <TextInput
             style={styles.inputText}
             autoFocus = {true}
@@ -129,45 +175,21 @@ class createRoute extends Component {
           />
           <TextInput
             ref='SecondInput'
-            style={styles.inputOne}
+            style={styles.inputText}
             placeholder="keywords"
             placeholderTextColor='#CDCDC9'
             onChangeText={(text) => this.setState({keywordsToTrace: text})}
           />
-          <MapView
-            style={styles.map}
-            onRegionChangeComplete={this.onRegionChangeComplete}
-          >
-            {Object.keys(this.state.pins[0]).map(id => (
-              <MapView.Marker
-                key={this.state.pins[0][id].key}
-                coordinate={this.state.pins[0][id].latlng}
-                onDragEnd={(e) => this.changeCoordinatesAfterDrop(e, this.state.pins[0][id].key)}
-                draggable
-              />
-            ))}
-            <MapView.Polyline
-             coordinates={this.state.routeCoordinates}
-             strokeColor="rgba(0,0,200,0.5)"
-             strokeWidth={3}
-             lineDashPattern={[5, 2, 3, 2]}
-           />
-         </MapView>
+        </View>
          <View>
          <TouchableOpacity
            style={styles.buttonPin}
            onPress={() => this.createNewPin()}
           >
-          <Text>PIN</Text>
+          <Text><Icon name="pin-drop" size={25} color="#3498db"/></Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonCheck}
-          onPress={() => this._onPressButtonPOST(this.state.pins[0]['0'], this.state.pins[0]['1'])}
-         >
-        <Text>Build</Text>
-          </TouchableOpacity>
           <TouchableHighlight style={styles.createRouteBtn} onPress={() => this.createEventView()}>
-            <Text>Create Route</Text>
+              <Text><Icon name="group-add" size={25} color="#3498db"/></Text>
           </TouchableHighlight>
         </View>
       </View>
@@ -183,24 +205,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   map: {
-    flex: 3,
-    width: width
+    position: 'relative',
+    flex: 1,
+    width: width,
+    height: height
+  },
+  inputs: {
+    position: 'absolute',
+    top:65
   },
   inputText: {
     height: 40,
-    width: width,
+    width: width-4,
     padding: 5,
+    marginTop:5,
+    marginLeft:2,
+    marginRight:2,
+    color: "#3498db",
     backgroundColor: '#fff',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20,
-    marginTop: 80
-  },
-  inputOne: {
-    height: 40,
-    width: width,
-    marginTop: 10,
-    backgroundColor: '#fff',
+    borderColor: "#3498db",
+    borderWidth: 1,
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 20
@@ -208,28 +232,28 @@ const styles = StyleSheet.create({
   buttonPin: {
     bottom: 30,
     right: 120,
+    width:50,
+    height:50,
     position: 'absolute',
     backgroundColor: '#fff',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20
-  },
-  buttonCheck: {
-    bottom:30,
-    right: 40,
-    position: 'absolute',
-    backgroundColor: '#fff',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20
+    borderColor: "#3498db",
+    borderWidth: 1,
+    paddingHorizontal: 11,
+    paddingVertical: 11,
+    borderRadius: 50
   },
   createRouteBtn: {
     bottom: 30,
+    left: 120,
+    width:50,
+    height:50,
     position: 'absolute',
     backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    borderRadius: 20
+    borderColor: "#3498db",
+    borderWidth: 1,
+    paddingHorizontal: 11,
+    paddingVertical: 11,
+    borderRadius: 50
   }
 });
 

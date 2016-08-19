@@ -14,53 +14,36 @@ const io = require('socket.io')(server);
 var rooms = {};
 var userId;
 var username;
-var myRoom;
+var myRoom = '1';
 
 const db = require('./db/config');
 
-var joinRoom = (data, socket) => {
-//  var myRoom = data.eventId;
-  //check to see if user_id is matched with event_id in
-  //events_participants join table
-  return db.knex.raw('SELECT * FROM `events_participants` WHERE `event_id`=' + data.event_id + ' AND `user_id`= ' + data.user_id)
-       .then((results) =>{
-         results = results[0][0]
-         if (results.length === 0){
-           //not a participant in this event
-         } else {
-            if(rooms.myRoom){
-              //existing room
-              rooms.myRoom.push(socket)
-            } else {
-              rooms.myRoom = [];
-              rooms.myRoom.push(socket)
-            }
-        }
-       return;
-  })
-}
 io.on('connection', (socket) => {
             console.log('Client connected');
 
-            socket.on('intitialize', (data) => {
+            socket.on('initialize', (data) => {
+                // userId = data.userId;
+                // username = data.username;
+                // joinRoom(myRoom, socket)
+                socket.leave(myRoom);
                 myRoom = data.eventId;
-                userId = data.userId;
-                username = data.username;
-                joinRoom(myRoom, socket)
-                console.log('intialaze client side', data)
-                socket.join(myRoom);
+                console.log('+++++++intialaze client side', data, myRoom)
+                socket.join(data.eventId);
+                console.log('joined')
             });
-  
+
             socket.on('location', (data) => {
-                console.log("Incoming location with updated title:", data)
-                console.log("Incoming location:", data)
-                data.title = username
-                io.to(myRoom).emit('groupUpdate', data);
+                //console.log("Incoming location with updated title:", data)
+                console.log("Incoming location:", data, myRoom)
+                //data.title = username
+                //myRoom = toString(data.eventId)
+                io.to(data.eventId).emit('groupUpdate', data);
             });
 
             socket.on('tweet', (data) => {
                 console.log("Incoming tweet:", data)
-                io.to(myRoom).emit('tweet', data);
+                //myRoom = toString(data.eventId)
+                io.to(data.eventId).emit('tweet', data.text);
             });
 
             socket.on('error', (err) => {

@@ -12,41 +12,83 @@ class Chat extends Component {
   constructor(props) {
     super(props);
     this.socket = props.socket
+    this.eventId = props.eventId
     this.state = {
-      eventId: '1',//eventId: props.eventId,   //this will come from group list view and pass to server
+      username: props.username,
+      eventId: props.eventId,
       message: props.message,
       socket:props.socket,
-      incomingMessage: props.incomingMessage
+      incomingMessage: ' '
      }
   }
 
   componentDidMount() {
-    console.log('mounted',this.state.socket)
+    console.log('mounted socket, eventid',this.state.socket, this.eventId)
     //this.state.socket = props.socket
 
-    this.socket.emit('intitialize',{eventId:this.state.eventId})
+    //this.socket.emit('intitialize',{eventId:this.state.eventId})
     console.log('intialaze client side')
 
 
     this.socket.on('tweet', (data) => {
       console.log("Chat message from server", data);
        this.setState({
-         incomingMessage: data.text
+         incomingMessage: data
        });
     });
    }
 
   handleKeyDown(e) {
     if(e.nativeEvent.key == "Enter"){
-      console.log('sending tweet', this.state.message)
-    this.socket.emit('tweet', {text:this.state.message})
+      var message = this.state.username + ': ' + this.state.message;
+      console.log('sending tweet', message, this.props.eventId)
+    this.socket.emit('tweet', {'text':message, 'eventId': this.props.eventId})
     this.state.message = "";
     }
   }
+  jewelStyle(options) {
+   if(options !== ' '){
+     return {
+       height: 40,
+       justifyContent: 'center',
+       fontSize:18,
+       width: width-18,
+       padding: 10,
+       color: "#3498db",
+       backgroundColor: '#fff',
+     }
+   } else {
+     return {
+       height: 0,
+       justifyContent: 'center',
+       fontSize:18,
+       width: width-18,
+       padding: 0,
+       color: "#3498db",
+       backgroundColor: '#fff',
+     }
+   }
+ }
+
+ navBar(options) {
+  if(options === '1'){
+    return {  }
+  } else {
+    return {
+      width: width-16,
+      position: 'absolute',
+      borderColor: "#3498db",
+      borderWidth: 1,
+      marginLeft:10,
+      marginRight:10,
+      top: 20
+    }
+  }
+}
 
   render() {
     return (
-        <View style={styles.navBar}>
+        <View style={this.navBar(this.props.eventId)}>
           <TextInput
              onKeyPress={this.handleKeyDown.bind(this)}
              placeholder="Send a Message to the Group"
@@ -54,7 +96,7 @@ class Chat extends Component {
              style={styles.chat}
              onChangeText={(message) => this.setState({message})}
              value={this.state.message}/>
-           <Text style={styles.chatIn}>
+           <Text style={this.jewelStyle(this.state.incomingMessage)}>
                {this.state.incomingMessage}
            </Text>
         </View>
@@ -65,38 +107,25 @@ class Chat extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding:10,
+    padding:0,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-    chatIn: {
-    height: 40,
-    padding:10,
-    backgroundColor: 'white',
-    top:20,
-    color: '#19B5FE',
-    padding: 8
+    alignItems: 'center'
   },
   chat: {
     height: 40,
-    padding:10,
-    borderColor: 'rgba(0,0,0,0.7)',
-    borderWidth: 2,
-    backgroundColor: 'white',
-    top:20,
-    color: '#19B5FE',
-    padding: 8
+    width: width-18,
+    padding: 10,
+    color: "#3498db",
+    backgroundColor: '#fff',
   },
   navBar: {
-    backgroundColor: 'grey',
-    height: 64,
-    width: width,
+    width: width-16,
     position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0
+    borderColor: "#3498db",
+    borderWidth: 1,
+    marginLeft:10,
+    marginRight:10,
+    top: 20
   }
 })
 

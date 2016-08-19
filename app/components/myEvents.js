@@ -2,42 +2,23 @@
 // My Events Template to render views of user created views.
 
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TouchableHighlight, ScrollView, ListView, TextInput, AlertIOS, AsyncStorage } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableHighlight, Dimensions, ScrollView, ListView, TextInput, AlertIOS, AsyncStorage } from 'react-native';
+import icon from '../icons/noun_14294.png'
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Main from './Main';
-
 // Test Data Objects
 //TODO Get request to database for event data.
 
-let listarray = [
-  {name: 'On the town', description: 'Hanging out with your besties and bros in Manhattan', location: 'Central Park', id:'123'},
-  {name: 'By the bay', description: 'A funtime picnic on the Hudson', location: 'Riverside Park', id:'123'},
-  {name: 'Sun Down Town', description: 'At sundown, getting together for happy hour', location: 'TriBeCa', id:'123'},
-  {name: 'On the Pier', description: 'A lazy boat ride cause we can!', location: 'Brooklyn Heights', id:'123'},
-  {name: 'Midnight Stroll', description: 'Navigating the streets of Manhattan', location: 'Times Square', id:'123'},
-  {name: 'A Quick Trip', description: 'Treasure hunt at the Empire State Building', location: 'Empire State Building', id:'123'},
-  {name: 'Midnight Stroll', description: 'Navigating the streets of Manhattan', location: 'Times Square', id:'123'},
-  {name: 'A Quick Trip', description: 'Treasure hunt at the Empire State Building', location: 'Empire State Building', id:'123'},
-  {name: 'Midnight Stroll', description: 'Navigating the streets of Manhattan', location: 'Times Square', id:'123'},
-  {name: 'A Quick Trip', description: 'Treasure hunt at the Empire State Building', location: 'Empire State Building', id:'123'},
-  {name: 'Midnight Stroll', description: 'Navigating the streets of Manhattan', location: 'Times Square', id:'123'},
-  {name: 'A Quick Trip', description: 'Treasure hunt at the Empire State Building', location: 'Empire State Building', id:'123'},
-  {name: 'On the town', description: 'Hanging out with your besties and bros in Manhattan', location: 'Central Park', id:'123'},
-  {name: 'By the bay', description: 'A funtime picnic on the Hudson', location: 'Riverside Park', id:'123'},
-  {name: 'Sun Down Town', description: 'At sundown, getting together for happy hour', location: 'TriBeCa', id:'123'},
-  {name: 'On the Pier', description: 'A lazy boat ride cause we can!', location: 'Brooklyn Heights', id:'123'},
-  {name: 'Midnight Stroll', description: 'Navigating the streets of Manhattan', location: 'Times Square', id:'123'}
-]
-
+const { width, height } = Dimensions.get('window')
 let dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
 class myEvents extends Component {
   constructor(props) {
     super(props);
 
-
     this.state = {
-      objectdataSource: dataSource.cloneWithRows(listarray),
+      objectdataSource: dataSource.cloneWithRows([]),
       highlightedRow: {}
     };
 
@@ -45,39 +26,57 @@ class myEvents extends Component {
   }
 
   componentDidMount(){
-    AsyncStorage.getItem("userId").then(userId => {
-    // fetch("http://localhost:8000/getMyEvents", {
-    //   method: "POST",
-    //   headers: {'Content-Type': 'application/json'},
-    //   body: JSON.stringify({user_id: userId})
-    // }).then(response => response.json())
-    // .then(responseData => {
-    //   this.setState({
-    //     objectdataSource: dataSource.cloneWithRows(responseData)
-    //   });
-    // }).done();
-    });
+    fetch("https://wegotoo.herokuapp.com/getMyEvents", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({user_id: this.props.userId})
+    }).then((response) => response.json()).then(responseData => {
+      // var data = responseData.filter(event => {
+      //   return new Date(event.time) > new Date();
+      // });
+      if (responseData.message){
+        console.log('You have no current events');
+        AlertIOS.alert("You have no current events");
+      }else {
+        this.setState({
+          objectdataSource: dataSource.cloneWithRows(responseData)
+        })
+      }
+    }).done();
   }
 
   goMap(rowData) {
     console.log("Hello: ", rowData);
-    // console.log("asdfasdf:", this.props.navigator.getCurrentRoutes())
-    this.props.setEventId(rowData.id);
+    this.props.setEventId(rowData.event_id);
     this.props.navigator.popToTop();
-    // this.props.navigator.jumpTo({
-    //   component: Main,
-    //   title: "Main"
-    // });
   }
 
   renderRow(rowData: string, sectionID: number, rowID: number,
     highlightedRow: (sectionID: nunber, rowID: number) => void)  {
     return (
       <TouchableOpacity style={styles.eventRow} onPress={() => this.goMap(rowData)}>
-      <View>
-        <Text>{'\n'}{rowData.name}{'\n'}{rowData.description}{'\n'}{rowData.location}{'\n'}</Text>
+        <View style={styles.box}>
+          <View style={styles.img}>
+            <Text><Icon name="event" size={25} color="#3498db"/></Text>
+          </View>
+          <View style={styles.text}>
+             <View>
+                 <Text style={styles.titleRow}>{rowData.title}</Text>
+             </View>
+             <View>
+                 <Text style={styles.start}>Start: {rowData.start_address}</Text>
+             </View>
+             <View>
+                 <Text style={styles.start}>End: {rowData.end_address}</Text>
+             </View>
+             <View>
+                 <Text style={styles.time}>{rowData.time}</Text>
+             </View>
+          </View>
+        <View>
+          <Text><Image source={icon} style={styles.image}/>{rowData.title}{'\n'}Start:{rowData.start_address}  End:{rowData.end_address}{'\n'}{rowData.time}{'\n'}</Text>
         <View />
-      </View>
+      </View></View>
       </TouchableOpacity>
     );
   }
@@ -97,12 +96,13 @@ class myEvents extends Component {
    render() {
     return (
       <View style={styles.container}>
-        <ListView
-          style={{marginTop: 2, alignSelf: 'center', padding: 7}}
+        <ListView style={styles.eventRow}
+          style={{marginTop: 0, alignSelf: 'center', padding: 0}}
           initialListSize={10}
           dataSource={this.state.objectdataSource}
           renderRow={(item) => { return this.renderRow(item) }}
-          renderSeparator={this.renderSeparator}/>
+          enableEmptySections={true}
+          contentInset={{bottom:10}}/>
       </View>
     );
   }
@@ -111,17 +111,51 @@ class myEvents extends Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'flex-start',
-      backgroundColor: '#DFD6CC'
+      backgroundColor: '#eee'
     },
     eventRow: {
-      flex: 1,
+      backgroundColor: '#fff',
       flexDirection: "row",
-      justifyContent: "flex-start",
-      height: 70
+      width: width-27,
+      height: 100,
+      marginTop: 5,
+      borderColor:'#3498db',
+      borderWidth:1,
+      padding:5,
+      overflow: 'hidden',
+    },
+    box: {
+      flexDirection: "row",
+      height: 92,
     },
     text: {
-      flex: 1
+      width: width-75,
+      paddingRight:10,
+      height: 90,
+      overflow: 'hidden',
+    },
+    img: {
+      paddingLeft:15,
+      paddingRight:25,
+      backgroundColor: '#fff',
+      justifyContent: 'center'
+    },
+    titleRow: {
+      marginTop:5,
+      marginBottom:5,
+      fontWeight:'bold',
+      color:'#000',
+      textAlign:'left',
+    },
+    start: {
+      color:'#ccc',
+      fontSize:11
+    },
+    time: {
+      color:'#000',
+      fontSize:11,
+      textAlign:'left',
+      paddingTop:10,
     }
 });
 

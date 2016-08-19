@@ -1,6 +1,12 @@
 package com.karmickoalas;
 
 import com.facebook.react.ReactActivity;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.gcrabtree.rctsocketio.SocketIoPackage;
+import com.joshblour.reactnativepermissions.ReactNativePermissionsPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.smixx.reactnativeicons.ReactNativeIcons;
+import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 
 public class MainActivity extends ReactActivity {
 

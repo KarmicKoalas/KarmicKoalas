@@ -1,8 +1,9 @@
 'use strict'
 
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, TextInput, AlertIOS, AsyncStorage } from 'react-native';
-import Main from './Main';
+import { StyleSheet, View, Text, Image, TouchableHighlight, TextInput, AlertIOS, AsyncStorage } from 'react-native';
+import logo from '../icons/pin.png'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class SignUp extends Component {
 	constructor(props) {
@@ -14,11 +15,11 @@ class SignUp extends Component {
       password: ''
     }
   }
-  
-	signUp(){
+
+  signUp(){
 		console.log('name: '+ this.state.name + '\nemail: '+ this.state.email + '\nusername: '+ this.state.username + '\npassword: '+ this.state.password);
 
-				fetch("https://wegoios.herokuapp.com/signup", {
+				fetch("https://wegotoo.herokuapp.com/signup", {
 				method: 'POST',
 				headers: {
 						'Accept': 'application/json',
@@ -30,27 +31,25 @@ class SignUp extends Component {
 					username: this.state.username,
 					password:  this.state.password,
 				})
-			}).then((response) => response.json())
-				.then((responseData) => {
+			}).then((response) => response.json()).then((responseData) => {
 					console.log('DATA FROM SERVER', responseData)
 					//update Asynch storage
 					var id = '' + responseData.userId;
 					AsyncStorage.setItem("userId", id);
 					AsyncStorage.setItem('username',this.state.username)
 					this.navToMain(responseData.userId)
-			 })
-			 .done();
+			 }).done();
   }
 
 	navToMain(id){
-		console.log('Username: ' + this.state.username + ' ID: ' + id);
+		//console.log('Username: ' + this.state.username + ' ID: ' + id);
 		this.props.navigator.resetTo({
 			navigationBarHidden: true,
 			component: Main,
-			title: "Main",
+			title: "",
 			passProps: {
-        name: this.state.username,
-				userID: id
+        username: this.state.username,
+				userId: id
       }
 		});
 	}
@@ -58,15 +57,13 @@ class SignUp extends Component {
   render() {
 		return (
       <View style={styles.container}>
-				<Text style={styles.textHeader}>
-					Sign Up
-				</Text>
+				<Image source={logo} style={styles.image}/>
         <TextInput
-          style = {styles.inputText}
-          returnKeyType = {"next"}
-          autoFocus = {true}
-          placeholder = "Name: "
-          placeholderTextColor="white"
+          style={styles.inputText}
+          returnKeyType={"next"}
+          autoFocus={true}
+          placeholder="Name"
+          placeholderTextColor="silver"
           onChangeText={(text) => this.setState({name: text})}
           onSubmitEditing={(event) => {
             this.refs.SecondInput.focus();
@@ -74,9 +71,9 @@ class SignUp extends Component {
         />
         <TextInput
           ref='SecondInput'
-          style = {styles.inputText}
-          placeholder="Email Address: "
-          placeholderTextColor="white"
+          style={styles.inputText}
+          placeholder="Email"
+          placeholderTextColor="silver"
           onChangeText={(text) => this.setState({email: text})}
           onSubmitEditing={(event) => {
             this.refs.ThirdInput.focus();
@@ -85,8 +82,8 @@ class SignUp extends Component {
 				<TextInput
           ref='ThirdInput'
           style={styles.inputText}
-          placeholder="Username: "
-          placeholderTextColor="white"
+					placeholder="Username"
+          placeholderTextColor="silver"
           onChangeText={(text) => this.setState({username: text})}
           onSubmitEditing={(event) => {
             this.refs.FourthInput.focus();
@@ -95,13 +92,13 @@ class SignUp extends Component {
         <TextInput
           ref='FourthInput'
           style={styles.inputText}
-          placeholder="Password: "
-          placeholderTextColor="white"
+					placeholder="Password"
+          placeholderTextColor="silver"
           password={true}
           onChangeText={(text) => this.setState({password: text})}
         />
         <TouchableHighlight onPress={() => this.signUp()} style={styles.button}>
-            <Text style={styles.buttonText}>Submit</Text>
+					<Text><Icon name="cloud-upload" size={25} color="#3498db"/></Text>
         </TouchableHighlight>
 			</View>
 			)
@@ -113,59 +110,45 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'cornflowerblue'
+      backgroundColor: '#ffffff'
     },
     text: {
       color: 'blue',
-      backgroundColor: 'lightblue',
+      backgroundColor: '#3498db',
       fontSize: 30,
       margin: 80
     },
-    navBar: {
-      backgroundColor: 'cornflowerblue',
-      height: 64,
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0
-    },
-    navText: {
-      color: 'white',
-      fontSize: 16,
-      fontWeight: "700",
-      textAlign: 'center',
-      paddingTop: 30
-    },
     inputText: {
-      height: 40,
-      color: 'white'
-    },
-    TextInput: {
-      borderWidth: 2,
-      color: 'white'
+      height: 35,
+      color: '#3498db',
+			borderColor: "#3498db",
+			fontSize: 15,
+			paddingLeft: 95,
+			borderBottomColor: 'red'
     },
     textHeader: {
       fontSize: 30,
-      color: 'white',
+      color: '#3498db',
       justifyContent: 'flex-start'
     },
-    buttonText: {
-      fontSize: 20,
-      color: 'white'
-    },
-    buttonText: {
-      fontSize: 18,
-      color: 'white',
-      alignSelf: 'center'
-    },
     button: {
-      height: 44,
-      flexDirection: 'row',
-      alignSelf: 'stretch',
-      justifyContent: 'center',
-      backgroundColor: 'skyblue'
-    }
-});
+				width:50,
+				height:50,
+				marginLeft:165,
+				position: 'absolute',
+				backgroundColor: '#fff',
+				borderColor: "#3498db",
+				borderWidth: 1,
+				paddingHorizontal: 11,
+				paddingVertical: 11,
+				borderRadius: 50,
+        flexDirection: 'row',
+    },
+		logo: {
+			height: 20,
+			width: 20,
+			flexDirection: 'row'
+		}
+	});
 
 module.exports =  SignUp;

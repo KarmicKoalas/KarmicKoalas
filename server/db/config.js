@@ -14,7 +14,8 @@ module.exports = {
   knex:knex
 };
 
-
+//DELETE FROM events WHERE timestamp < (NOW() - INTERVAL 1 DAY)
+//
 // db.schema.hasTable('users').then(function(exists) {
 //   if (!exists) {
 //     db.schema.createTable('users', function(user) {
