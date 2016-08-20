@@ -29,24 +29,19 @@ body {
   margin-top: 30px;
 }
 
-.flow {
-  margin-top: 20px;
-  border: 1px solid blue;
-}
-
 .flow_img {
-  width: 700px;
+  width: 100%;
 }
 
-.techstack {
-  margin-top: 20px;
-  border: 1px solid blue;
+.techstack_img {
+  width: 100%;
 }
 
 .contributors {
   margin-top: 20px;
+  text-align: center;
 }
 
 .developer_pic {
-  width: 100px;
+  width: 100%;
 }
