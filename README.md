@@ -1,14 +1,14 @@
-# We Go Too![](/landing/logo.png)
+# We Go Too![](/landing/assets/logo.png)
 
 We Go Too is an IOS app which provides a social layer on top of maps' functionality, allowing users to create routes, search for existing routes around the world and invite friends to join them on those routes, with a real time GPS and chat connection. WeGoToo was conceived of by a team of four full-stack software engineers: [Rebecca Gray](https://github.com/rebeccagray), [Konstantin Zamaraev](https://github.com/zamaraevk), [Alexius Hale-Dubuque](https://github.com/alexiushaledubuque), and [Bohee Park](https://github.com/boheepark)
 
 #####[Visit the app](http://WeGoToo.herokuapp.com/)
 
 ## Tech Stack
-![Tech Stack](/landing/wegotootechstack.jpeg)
+![Tech Stack](/landing/assets/wegotootechstack.jpeg)
 
 ## Architecture
-![Architecture](/landing/WeGoToo.001.jpeg)
+![Architecture](/landing/assets/WeGoToo.001.jpeg)
 
 ## Features
 - General Features
