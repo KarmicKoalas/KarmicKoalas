@@ -5,7 +5,7 @@ We Go Too is an IOS app which provides a social layer on top of maps' functional
 #####[Visit the app](http://WeGoToo.herokuapp.com/)
 
 ## Tech Stack
-![Tech Stack](/landing/assets/wegotootechstack.jpeg)
+![Tech Stack](/landing/assets/wegotootechstack.001.jpeg)
 
 ## Architecture
 ![Architecture](/landing/assets/WeGoToo.001.jpeg)
